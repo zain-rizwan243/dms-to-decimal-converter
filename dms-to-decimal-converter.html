@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Coordinate Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            position: relative;
+            background: white;
+            padding: 25px;
+            padding-bottom: 70px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .main-layout {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .form-side {
+            flex: 1.2;
+        }
+        
+        .plot-side {
+            flex: 1;
+            background: #fdfdfd;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            height: 200px;
+        }
+        .plot-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        svg {
+            width: 140px;
+            height: 140px;
+        }
+        .plot-edge {
+            stroke: #e2e8f0;
+            stroke-width: 3;
+            transition: stroke 0.3s ease, stroke-width 0.3s ease;
+        }
+        .plot-corner {
+            fill: #cbd5e1;
+            transition: fill 0.3s ease, r 0.3s ease;
+        }
+        .plot-text {
+            font-size: 9px;
+            font-weight: bold;
+            fill: #94a3b8;
+            font-family: Arial, sans-serif;
+            transition: fill 0.3s ease, font-size 0.3s ease;
+        }
+        
+        .active-corner {
+            fill: #4CAF50 !important;
+            r: 6 !important;
+        }
+        .active-edge {
+            stroke: #4CAF50 !important;
+            stroke-width: 4px;
+        }
+        .active-text {
+            fill: #2e7d32 !important;
+            font-size: 11px;
+        }
+
+        @media (max-width: 600px) {
+            .main-layout { flex-direction: column; }
+            .plot-side { width: 100%; box-sizing: border-box; }
+        }
+
+        .side-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9f9f9;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #cbd5e1;
+            transition: border-left 0.3s ease;
+        }
+        .side-row.filled {
+            border-left: 4px solid #4CAF50;
+        }
+        .side-label {
+            font-weight: bold;
+            width: 85px; /* Expanded slightly for the word "Corner" */
+        }
+        .inputs {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        input[type="number"] {
+            width: 55px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .result {
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: bold;
+            color: #64748b;
+            width: 120px;
+            text-align: right;
+            transition: color 0.3s ease;
+        }
+        .side-row.filled .result {
+            color: #2e7d32;
+        }
+        
+        .clear-btn {
+            position: absolute;
+            bottom: 15px;
+            left: 25px;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .clear-btn:hover {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .signature {
+            position: absolute;
+            bottom: 18px;
+            right: 25px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .signature span { font-weight: bold; color: #64748b; }
+        .signature em { font-style: normal; color: #3498db; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>DMS to Decimal Converter</h2>
+    
+    <div class="main-layout">
+        <div class="form-side">
+            <div class="side-row" id="row1">
+                <div class="side-label">Corner 1:</div>
+                <div class="inputs">
+                    <input type="number" id="d1" placeholder="°" oninput="convert(1)">
+                    <input type="number" id="m1" placeholder="'" oninput="convert(1)">
+                    <input type="number" id="s1" placeholder='"' step="any" oninput="convert(1)">
+                </div>
+                <div class="result" id="res1">0.000000</div>
+            </div>
+
+            <div class="side-row" id="row2">
+                <div class="side-label">Corner 2:</div>
+                <div class="inputs">
+                    <input type="number" id="d2" placeholder="°" oninput="convert(2)">
+                    <input type="number" id="m2" placeholder="'" oninput="convert(2)">
+                    <input type="number" id="s2" placeholder='"' step="any" oninput="convert(2)">
+                </div>
+                <div class="result" id="res2">0.000000</div>
+            </div>
+
+            <div class="side-row" id="row3">
+                <div class="side-label">Corner 3:</div>
+                <div class="inputs">
+                    <input type="number" id="d3" placeholder="°" oninput="convert(3)">
+                    <input type="number" id="m3" placeholder="'" oninput="convert(3)">
+                    <input type="number" id="s3" placeholder='"' step="any" oninput="convert(3)">
+                </div>
+                <div class="result" id="res3">0.000000</div>
+            </div>
+
+            <div class="side-row" id="row4">
+                <div class="side-label">Corner 4:</div>
+                <div class="inputs">
+                    <input type="number" id="d4" placeholder="°" oninput="convert(4)">
+                    <input type="number" id="m4" placeholder="'" oninput="convert(4)">
+                    <input type="number" id="s4" placeholder='"' step="any" oninput="convert(4)">
+                </div>
+                <div class="result" id="res4">0.000000</div>
+            </div>
+        </div>
+
+        <div class="plot-side">
+            <div class="plot-title">Plot Preview</div>
+            <svg viewBox="0 0 100 100">
+                <line id="edge1" class="plot-edge" x1="20" y1="80" x2="20" y2="20" />  <line id="edge2" class="plot-edge" x1="20" y1="20" x2="80" y2="20" />  <line id="edge3" class="plot-edge" x1="80" y1="20" x2="80" y2="80" />  <line id="edge4" class="plot-edge" x1="80" y1="80" x2="20" y2="80" />  <circle id="dot1" class="plot-corner" cx="20" cy="80" r="4" /> 
+                <circle id="dot2" class="plot-corner" cx="20" cy="20" r="4" /> 
+                <circle id="dot3" class="plot-corner" cx="80" cy="20" r="4" /> 
+                <circle id="dot4" class="plot-corner" cx="80" cy="80" r="4" /> 
+
+                <text id="txt1" class="plot-text" x="5" y="95">C1</text>
+                <text id="txt2" class="plot-text" x="5" y="13">C2</text>
+                <text id="txt3" class="plot-text" x="84" y="13">C3</text>
+                <text id="txt4" class="plot-text" x="84" y="95">C4</text>
+            </svg>
+        </div>
+    </div>
+
+    <button class="clear-btn" onclick="clearAll()">Clear All</button>
+    <div class="signature">Designed by <span>ZainR.</span> using <em>Gemini</em></div>
+</div>
+
+<script>
+function convert(sideNum) {
+    let dVal = document.getElementById(`d${sideNum}`).value;
+    let mVal = document.getElementById(`m${sideNum}`).value;
+    let sVal = document.getElementById(`s${sideNum}`).value;
+
+    let d = parseFloat(dVal) || 0;
+    let m = parseFloat(mVal) || 0;
+    let s = parseFloat(sVal) || 0;
+    
+    let decimal = d + (m / 60) + (s / 3600);
+    document.getElementById(`res${sideNum}`).innerText = decimal.toFixed(6);
+
+    if (dVal !== '' || mVal !== '' || sVal !== '') {
+        document.getElementById(`row${sideNum}`).classList.add('filled');
+        document.getElementById(`dot${sideNum}`).classList.add('active-corner');
+        document.getElementById(`edge${sideNum}`).classList.add('active-edge');
+        document.getElementById(`txt${sideNum}`).classList.add('active-text');
+    } else {
+        removeActiveState(sideNum);
+    }
+}
+
+function removeActiveState(sideNum) {
+    document.getElementById(`row${sideNum}`).classList.remove('filled');
+    document.getElementById(`dot${sideNum}`).classList.remove('active-corner');
+    document.getElementById(`edge${sideNum}`).classList.remove('active-edge');
+    document.getElementById(`txt${sideNum}`).classList.remove('active-text');
+}
+
+function clearAll() {
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById(`d${i}`).value = '';
+        document.getElementById(`m${i}`).value = '';
+        document.getElementById(`s${i}`).value = '';
+        document.getElementById(`res${i}`).innerText = '0.000000';
+        removeActiveState(i);
+    }
+}
+</script>
+
+</body>
+</html>
