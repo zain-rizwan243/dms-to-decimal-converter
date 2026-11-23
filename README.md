@@ -7,8 +7,7 @@ browser with no installation and no internet connection needed.
 
 ## How to Use
 Download `dms-to-decimal-converter.html` and open it in any browser. It works offline.
-
-Or use the live page: https://zain-rizwan243.github.io/dms-to-decimal-converter/
+[Or use the live page: https://zain-rizwan243.github.io/dms-to-decimal-converter/](https://zain-rizwan243.github.io/dms-to-decimal-converter/dms-to-decimal-converter.html)
 
 ## Screenshots
 <img width="781" height="465" alt="image" src="https://github.com/user-attachments/assets/4b1d8298-9797-4cd9-99ba-3ed9dacc4904" />
